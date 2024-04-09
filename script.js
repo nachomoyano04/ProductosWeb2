@@ -27,6 +27,8 @@ const consumir = () => {
                 $card[counter].appendChild($fragmento);
                 counter++;
               });
+              const $botones = document.getElementsByClassName("botonDeCompra");
+              const $contadorCarrito = document.getElementById("contadorCarrito");
               //recorremos las cartas
               for(let i = 0; i < $card.length; i++){
                 let descripcion = $card[i].childNodes[2]; //tomamos el elemento de la descripcion
@@ -46,6 +48,9 @@ const consumir = () => {
                   descripcion.textContent = `Description:\n${json[i].description.slice(0,30)}...`;
                   descripcion.style.whiteSpace = 'pre-line';
                 })
+                $botones[i].addEventListener("click", () => {
+                    $contadorCarrito.textContent = parseInt($contadorCarrito.textContent) + 1;
+                });
               }
             }else{
                 let mensaje = xhr.statusText || "ocurrió un error."; // si no hay info del estatus se muestra ocurrio un error.
@@ -92,6 +97,6 @@ const consumir = () => {
   const crearBotonDeCompra = (e, b) => {
     b.innerHTML = "Agregar al carrito";
     b.style.margin = "0px 0px 5px 0px";
-    b.id = "botonDeCompra";    
+    b.className = "botonDeCompra";    
     return b;
   }

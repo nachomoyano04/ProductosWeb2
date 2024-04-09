@@ -46,9 +46,10 @@ footer a,img{
 /* .cardDescription:hover{
 
 } */
-#botonDeCompra:hover{
+.botonDeCompra:hover{
     border-color: #002500;
     border-width: 5px;
+    cursor:pointer;
 }
 .header{
     background-color: #929982;
@@ -58,4 +59,14 @@ footer a,img{
     width: 100%;
     display: flex;
     justify-content: space-evenly;
+}
+#carrtitoYContador{
+    display: flex;
+}
+#contadorCarrito{
+    background-color: red;
+    margin: 0px;
+    height: fit-content;
+    border-radius: 20px;
+    padding: 4px;
 }
