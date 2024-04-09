@@ -1,4 +1,3 @@
-// let consumo = fetch('https://fakestoreapi.com/products').then(res => res.json()).then(res => console.log(res));
 const consumir = () => {
     const xhr = new XMLHttpRequest(); // Paso 1: Crear el objeto XMLHttpRequest
     const $card = document.getElementsByClassName("card");
@@ -15,6 +14,7 @@ const consumir = () => {
                 let $descripcion = document.createElement("p");
                 let $categoria = document.createElement("p");
                 let $precio = document.createElement("p");
+                let $botonDeCompra = document.createElement("button");
                 //Creamos un fragmento para insertar todos los elementos de una en el DOM
                 let $fragmento = document.createDocumentFragment();
                 $fragmento.appendChild(crearImagen(e, $img));
@@ -22,6 +22,7 @@ const consumir = () => {
                 $fragmento.appendChild(crearDescripcion(e, $descripcion));
                 $fragmento.appendChild(crearCategoria(e, $categoria));
                 $fragmento.appendChild(crearPrecio(e, $precio));
+                $fragmento.appendChild(crearBotonDeCompra(e, $botonDeCompra));
                 //Insertamos el fragmento en la carta
                 $card[counter].appendChild($fragmento);
                 counter++;
@@ -34,14 +35,16 @@ const consumir = () => {
                 descripcion.addEventListener("mouseover", () => {
                   $card[i].childNodes[3].style.display = "none";
                   $card[i].childNodes[4].style.display = "none";
-                  descripcion.textContent = json[i].description;
+                  descripcion.textContent = `Description:\n${json[i].description}`;
+                  descripcion.style.whiteSpace = 'pre-line';
                 });
                 //Lo mismo que para el mouseover pero cuando se produce el mouseleave se muestran
                 // de nuevo la categoria y el precio del producto
                 descripcion.addEventListener("mouseleave", () => {
                   $card[i].childNodes[3].style.display = "block";
                   $card[i].childNodes[4].style.display = "block";
-                  descripcion.textContent = `${json[i].description.slice(0,30)}...`;
+                  descripcion.textContent = `Description:\n${json[i].description.slice(0,30)}...`;
+                  descripcion.style.whiteSpace = 'pre-line';
                 })
               }
             }else{
@@ -59,30 +62,36 @@ const consumir = () => {
   
   // funciones para crear los elementos de cada carta, para que sea más facil la lectura del código
   // y tambien para que sea mas comodo el agregar estilos a cada elemento
-  const crearImagen = (producto, $img) => {
-    $img.src = producto.image;
-    $img.style.height = "200px";
-    $img.style.width = "95%";
-    $img.style.margin = "5px";
-    $img.style.borderRadius = "10px";
-    return $img;
+  const crearImagen = (producto, i) => {
+    i.src = producto.image;
+    i.style.height = "200px";
+    i.style.width = "95%";
+    i.style.margin = "5px";
+    i.style.borderRadius = "10px";
+    return i;
   }
-  const crearTitulo = (producto, $titulo) => {
-    $titulo.style.fontFamily = "monospace";
-    $titulo.style.backgroundColor = "#929982";
-    $titulo.innerHTML = `${(producto.title).toUpperCase()}`;
-    return $titulo;
+  const crearTitulo = (producto, t) => {
+    t.style.fontFamily = "monospace";
+    t.style.backgroundColor = "#929982";
+    t.innerHTML = `${(producto.title).toUpperCase()}`;
+    return t;
   }
-  const crearDescripcion = (e, $descripcion) => {
-    $descripcion.style.fontFamily = "lato";
-    $descripcion.innerHTML = `${e.description.slice(0,30)}...`;
-    return $descripcion;
+  const crearDescripcion = (producto, d) => {
+    d.style.fontFamily = "lato";
+    d.innerHTML = `Description: <br>${producto.description.slice(0,30)}...`;
+    return d;
   }
-  const crearCategoria = (e, $categoria) => {
-    $categoria.innerHTML = `Category: ${e.category}`;
-    return $categoria;
+  const crearCategoria = (producto, c) => {
+    c.innerHTML = `Category: ${producto.category}`;
+    return c;
   }
-  const crearPrecio = (e, $precio) => {
-    $precio.innerHTML = `Price: $${e.price}`;
-    return $precio;
+  const crearPrecio = (producto, p) => {
+    p.innerHTML = `Price: $${producto.price}`;
+    return p;
+  }
+  const crearBotonDeCompra = (e, b) => {
+    b.innerHTML = "Agregar al carrito";
+    b.style.margin = "0px 0px 5px 0px";
+    b.id = "botonDeCompra";    
+    return b;
   }
