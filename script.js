@@ -1,3 +1,4 @@
+import { crearImagen, crearTitulo, crearDescripcion, crearCategoria, crearPrecio, crearBotonDeCompra} from "./funcionesProd.js";
 const consumir = () => {
     const xhr = new XMLHttpRequest(); // Paso 1: Crear el objeto XMLHttpRequest
     const $card = document.getElementsByClassName("card");
@@ -29,6 +30,10 @@ const consumir = () => {
               });
               const $botones = document.getElementsByClassName("botonDeCompra");
               const $contadorCarrito = document.getElementById("contadorCarrito");
+              //A partir del localStorage seteamos el contador del carrito, esto esta bueno para cuando
+              // el cliente sale sin querer de la pagina y se guarden los productos en el carrito cuando 
+              // se vuelve a cargar la pagina.
+              $contadorCarrito.textContent = localStorage.getItem("contadorCarrito");
               //recorremos las cartas
               for(let i = 0; i < $card.length; i++){
                 let descripcion = $card[i].childNodes[2]; //tomamos el elemento de la descripcion
@@ -48,9 +53,13 @@ const consumir = () => {
                   descripcion.textContent = `Description:\n${json[i].description.slice(0,30)}...`;
                   descripcion.style.whiteSpace = 'pre-line';
                 })
+                // localStorage.setItem("contadorCarrito", 0); //seteamos el contador del carrito
                 $botones[i].addEventListener("click", () => {
-                    $contadorCarrito.textContent = parseInt($contadorCarrito.textContent) + 1;
-                });
+                    //cada click setea el localstorage contadorCarrito +1 y queda almacenado.
+                    let contador = parseInt(localStorage.getItem("contadorCarrito"));
+                    localStorage.setItem("contadorCarrito",(contador+1));
+                    $contadorCarrito.textContent = contador + 1;
+                  });
               }
             }else{
                 let mensaje = xhr.statusText || "ocurrió un error."; // si no hay info del estatus se muestra ocurrio un error.
@@ -64,39 +73,3 @@ const consumir = () => {
     xhr.send(); //Paso 4: Enviamos la petición
   }
   consumir();
-  
-  // funciones para crear los elementos de cada carta, para que sea más facil la lectura del código
-  // y tambien para que sea mas comodo el agregar estilos a cada elemento
-  const crearImagen = (producto, i) => {
-    i.src = producto.image;
-    i.style.height = "200px";
-    i.style.width = "95%";
-    i.style.margin = "5px";
-    i.style.borderRadius = "10px";
-    return i;
-  }
-  const crearTitulo = (producto, t) => {
-    t.style.fontFamily = "monospace";
-    t.style.backgroundColor = "#929982";
-    t.innerHTML = `${(producto.title).toUpperCase()}`;
-    return t;
-  }
-  const crearDescripcion = (producto, d) => {
-    d.style.fontFamily = "lato";
-    d.innerHTML = `Description: <br>${producto.description.slice(0,30)}...`;
-    return d;
-  }
-  const crearCategoria = (producto, c) => {
-    c.innerHTML = `Category: ${producto.category}`;
-    return c;
-  }
-  const crearPrecio = (producto, p) => {
-    p.innerHTML = `Price: $${producto.price}`;
-    return p;
-  }
-  const crearBotonDeCompra = (e, b) => {
-    b.innerHTML = "Agregar al carrito";
-    b.style.margin = "0px 0px 5px 0px";
-    b.className = "botonDeCompra";    
-    return b;
-  }
