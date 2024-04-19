@@ -12,6 +12,92 @@
     </div>
 </header>
 <body>
-    
+    <div id="cardContainerCarrito">
+        <div id="comprarProductos">
+            <h4>Tu carrito</h4>
+            <h5 id="cantidadDeProductos"></h5>
+        </div>
+        <div id="botonComprar">
+            <button>Comprar</button>
+        </div>
+    </div>
+<script>
+    let contenidoEnLocalStorage = JSON.parse(localStorage.getItem("productosCarrito"));
+    if(contenidoEnLocalStorage){
+        let cantidad = contenidoEnLocalStorage.reduce((acc, elemento) => {
+            let obj = {}
+            if(!acc.find(e => e.titulo === elemento.titulo)){
+                obj.titulo = elemento.titulo;
+                obj.imagen = elemento.imagen;
+                obj.precio = elemento.precio;
+                acc.push(obj)
+            }
+            return acc;
+        }, []);
+        let objetoConTituloImagenCantidad = cantidad.map(e => {
+            let cantidad = contenidoEnLocalStorage.filter(elemento => elemento.titulo === e.titulo);
+            return {titulo: e.titulo, imagen: e.imagen, precio: e.precio, cantidad: cantidad.length}
+        })
+        const crearImagen = (elemento, $imagen) => {
+            $imagen.src = elemento.imagen;
+            $imagen.style.width = "100px";
+            $imagen.style.height = "120px";
+            return $imagen;
+        }
+        const crearTitulo = (elemento, $titulo) => {
+            $titulo.innerHTML = elemento.titulo;
+            $titulo.style.margin = "0px 10px";
+            $titulo.style.width = "460px";
+            return $titulo;
+        }
+        const crearPrecio = (elemento, $precio) => {
+            $precio.innerHTML = `${elemento.precio.slice(6)}`;
+            $precio.style.margin = "0px 10px"
+            $precio.style.width = "55px"
+            return $precio;
+        }
+        const crearCantidad = (elemento, $cantidad) => {
+            $cantidad.innerHTML = `cantidad: ${elemento.cantidad}`;
+            $cantidad.style.margin = "0px 10px"
+            $cantidad.style.width = "70px"
+            return $cantidad;
+        }
+        const crearTotal = (elemento, $total) => {
+            let total = parseFloat(elemento.precio.slice(8)) * parseInt(elemento.cantidad);
+            $total.style.margin = "0px 10px";
+            $total.innerHTML = `Total: $${total}`;
+            return $total;
+        }
+        //Agregamos los productos del carrito en localstorage al DOM
+        let $contenedorCarrito = document.getElementById("cardContainerCarrito");
+        objetoConTituloImagenCantidad.forEach(elemento => {
+            let $divProducto = document.getElementById("comprarProductos");
+            let $divProductoEnCarrito = document.createElement("div");
+            let $fragmento = document.createDocumentFragment();
+            let $imagen = document.createElement("img");
+            let $titulo = document.createElement("p");
+            let $precio = document.createElement("p");
+            let $cantidad = document.createElement("p");
+            let $total = document.createElement("p");
+            $divProductoEnCarrito.className = "productosEnCarrito";
+            $fragmento.appendChild(crearImagen(elemento, $imagen));
+            $fragmento.appendChild(crearTitulo(elemento, $titulo));
+            $fragmento.appendChild(crearPrecio(elemento, $precio));
+            $fragmento.appendChild(crearCantidad(elemento, $cantidad));
+            $fragmento.appendChild(crearTotal(elemento, $total));
+            $divProductoEnCarrito.appendChild($fragmento);
+            $divProducto.appendChild($divProductoEnCarrito);
+            $contenedorCarrito.appendChild($divProducto);
+        })
+        document.getElementById("cantidadDeProductos").innerHTML = `${objetoConTituloImagenCantidad.length} productos`;
+    }
+</script>
 </body>
+<footer>
+    <ul>
+        <li>WEB II</li>
+        <li>Ignacio Moyano Guzmán</li>
+        <li><a href="https://github.com/nachomoyano04"><img src="github_733609.png" alt="github">GitHub</a></li>
+    </ul>    
+</footer>
 </html>

@@ -34,3 +34,4 @@
     b.className = "botonDeCompra";    
     return b;
   }
+  

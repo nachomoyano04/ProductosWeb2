@@ -35,6 +35,10 @@ const consumir = () => {
               // se vuelve a cargar la pagina.
               $contadorCarrito.textContent = localStorage.getItem("contadorCarrito");
               //recorremos las cartas
+              let arregloDeProductos = JSON.parse(localStorage.getItem("productosCarrito"));
+              if(!Array.isArray(arregloDeProductos)){
+                arregloDeProductos = [];
+              }
               for(let i = 0; i < $card.length; i++){
                 let descripcion = $card[i].childNodes[2]; //tomamos el elemento de la descripcion
                 //Codigo para que cuando se produzca el mouse over muestre la descripcion entera
@@ -53,12 +57,22 @@ const consumir = () => {
                   descripcion.textContent = `Description:\n${json[i].description.slice(0,30)}...`;
                   descripcion.style.whiteSpace = 'pre-line';
                 })
-                // localStorage.setItem("contadorCarrito", 0); //seteamos el contador del carrito
-                $botones[i].addEventListener("click", () => {
-                    //cada click setea el localstorage contadorCarrito +1 y queda almacenado.
-                    let contador = parseInt(localStorage.getItem("contadorCarrito"));
-                    localStorage.setItem("contadorCarrito",(contador+1));
-                    $contadorCarrito.textContent = contador + 1;
+                localStorage.setItem("contadorCarrito", 0); //seteamos el contador del carrito
+                localStorage.setItem("productosCarrito", JSON.stringify(""));
+                $botones[i].addEventListener("click", (evento) => {
+                  //cada click setea el localstorage contadorCarrito +1 y queda almacenado.
+                  let contador = parseInt(localStorage.getItem("contadorCarrito"));
+                  localStorage.setItem("contadorCarrito",(contador+1));
+                  $contadorCarrito.textContent = contador + 1;
+                  //codigo para agregar el producto a la lista de productos del carrito en localStorage
+                  let productoElegido = evento.target.parentElement.childNodes; 
+                  let elemento = {
+                    imagen: productoElegido[0].src,
+                    titulo: productoElegido[1].textContent,
+                    precio: productoElegido[4].textContent
+                  }
+                  arregloDeProductos.push(elemento);
+                  localStorage.setItem("productosCarrito", JSON.stringify(arregloDeProductos));
                   });
               }
             }else{
