@@ -33,7 +33,13 @@ const consumir = () => {
               //A partir del localStorage seteamos el contador del carrito, esto esta bueno para cuando
               // el cliente sale sin querer de la pagina y se guarden los productos en el carrito cuando 
               // se vuelve a cargar la pagina.
-              $contadorCarrito.textContent = localStorage.getItem("contadorCarrito");
+              let contador = localStorage.getItem("contadorCarrito");
+              if(contador === null){
+                contador = 0;
+                $contadorCarrito.textContent = contador;
+              }else{
+                $contadorCarrito.textContent = contador;
+              }
               //recorremos las cartas
               let arregloDeProductos = JSON.parse(localStorage.getItem("productosCarrito"));
               if(!Array.isArray(arregloDeProductos)){
@@ -57,13 +63,14 @@ const consumir = () => {
                   descripcion.textContent = `Description:\n${json[i].description.slice(0,30)}...`;
                   descripcion.style.whiteSpace = 'pre-line';
                 })
-                localStorage.setItem("contadorCarrito", 0); //seteamos el contador del carrito
-                localStorage.setItem("productosCarrito", JSON.stringify(""));
+                // localStorage.setItem("contadorCarrito", 0); //seteamos el contador del carrito
+                // localStorage.setItem("productosCarrito", JSON.stringify(""));
                 $botones[i].addEventListener("click", (evento) => {
                   //cada click setea el localstorage contadorCarrito +1 y queda almacenado.
-                  let contador = parseInt(localStorage.getItem("contadorCarrito"));
-                  localStorage.setItem("contadorCarrito",(contador+1));
-                  $contadorCarrito.textContent = contador + 1;
+                  let contador2 = parseInt(contador);
+                  localStorage.setItem("contadorCarrito",(contador2+1));
+                  $contadorCarrito.textContent = contador2 + 1;
+                  contador++;
                   //codigo para agregar el producto a la lista de productos del carrito en localStorage
                   let productoElegido = evento.target.parentElement.childNodes; 
                   let elemento = {

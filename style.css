@@ -43,9 +43,6 @@ footer a,img{
     text-decoration: none;
     color: black;
 }
-/* .cardDescription:hover{
-
-} */
 .botonDeCompra:hover{
     border-color: #002500;
     border-width: 5px;
@@ -72,45 +69,40 @@ footer a,img{
 }
 #cardContainerCarrito{ 
     display: flex;
-    /* width: 100%; */
-    flex-direction: column-reverse;
+    flex-direction: column;
     margin: 0px 200px;
     border: 2px solid black;
 }
-/* #comprarProductos{
-    border: 2px solid black;
-} */
 #comprarProductos h4{
     background-color: #495F41;
     margin: 0px;
     padding: 20px 0px;
     font-size: 30px;
+    color: antiquewhite;
 }
 #comprarProductos h5{
-    /* background-color: #495F41; */
     margin: 0px;
     padding: 20px 0px;
     color: rgb(199, 192, 192);
     font-size: 15px;
-    /* font-size: 30px; */
 }
 .productosEnCarrito{
     display: flex;
     margin-bottom: 50px;
     align-items: center;
-    background-color: #495F41;
+    background-color: #779a6a;
     justify-content: space-between;
 }
 .productosEnCarrito img p{
     margin: 0px 10px;
 }
-#botonComprar{
+#botonComprarYBorrar{
     padding: 10px;
-    background-color: #929982;
+    background-color: #779a6a;
     display: flex;
     justify-content: flex-end;
 }
-#botonComprar button{
+#botonComprarYBorrar button{
     width: 180px;
     height: 40px;
     background-color: #235e0f;
@@ -119,6 +111,6 @@ footer a,img{
     color: aliceblue;
     font-weight: bold;
 }
-#botonComprar button:hover{
+#botonComprarYBorrar button:hover{
     background-color: #032f04;
 }
