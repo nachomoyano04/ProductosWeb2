@@ -56,9 +56,19 @@
                     return $titulo;
                 }
                 const crearPrecio = (elemento, $precio) => {
-                    $precio.innerHTML = `${elemento.precio.slice(6)}`;
-                    $precio.style.margin = "0px 10px"
-                    $precio.style.width = "55px"
+                    let precios = [...elemento.precio].filter(e => e.charCodeAt(0)>= 48 && e.charCodeAt(0)<= 57 || e.charCodeAt(0) === 46 || e.charCodeAt(0) === 36);
+                    precios = precios.join("");
+                    precios = precios.split("$");
+                    precios.shift();
+                    if(precios.length === 2){
+                        $precio.innerHTML = `<p class="tachado">$${precios[0]}</p> $${precios[1]}`;
+                        $precio.style.margin = "0px 10px";
+                        $precio.style.width = "55px";
+                    }else{
+                        $precio.innerHTML = `$${precios[0]}`;
+                        $precio.style.margin = "0px 10px";
+                        $precio.style.width = "55px";
+                    }
                     return $precio;
                 }
                 const crearCantidad = (elemento, $cantidad) => {
@@ -69,9 +79,18 @@
                 }
                 let totalCompraCarrito = 0;
                 const crearTotal = (elemento, $total) => {
-                    let total = parseFloat(elemento.precio.slice(8)) * parseInt(elemento.cantidad);
+                    let precios = [...elemento.precio].filter(e => e.charCodeAt(0)>= 48 && e.charCodeAt(0)<= 57 || e.charCodeAt(0) === 46 || e.charCodeAt(0) === 36);
+                    precios = precios.join("");
+                    precios = precios.split("$");
+                    precios.shift();
+                    let total = 0;
+                    if(precios.length === 2){
+                        total = precios[1] * parseInt(elemento.cantidad); 
+                    }else{
+                        total = precios[0] * parseInt(elemento.cantidad);
+                    }
                     $total.style.margin = "0px 10px";
-                    $total.innerHTML = `Total: $${total}`;
+                    $total.innerHTML = `Total: $${total.toFixed(2)}`;
                     totalCompraCarrito = totalCompraCarrito + total;
                     return $total;
                 }

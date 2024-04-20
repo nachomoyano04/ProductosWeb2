@@ -114,3 +114,21 @@ footer a,img{
 #botonComprarYBorrar button:hover{
     background-color: #032f04;
 }
+.franjaRojaDescuento{
+    display: flex;
+    position: relative;
+}
+.deOferta{
+    position: absolute;
+    background-color: rgb(55, 255, 0);
+    color: black;
+    font-family: sans-serif;
+    width: 314px;
+    transform: rotate(38deg);
+    margin-top: 96px;
+    right: -23px;
+    border-radius: 10px;
+}
+.tachado{
+    text-decoration: line-through;
+}

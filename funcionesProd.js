@@ -1,4 +1,3 @@
-  
   // funciones para crear los elementos de cada carta, para que sea más facil la lectura del código
   // y tambien para que sea mas comodo el agregar estilos a cada elemento
   export const crearImagen = (producto, i) => {
@@ -24,8 +23,17 @@
     c.innerHTML = `Category: ${producto.category}`;
     return c;
   }
-  export const crearPrecio = (producto, p) => {
-    p.innerHTML = `Price: $${producto.price}`;
+  export const crearPrecio = (producto, p, productoDescuento) => {
+    let ids = productoDescuento.map(e => e.id);
+    let precio = producto.price;
+    if(ids.includes(producto.id)){
+      let posicion = ids.indexOf(producto.id);
+      let descuento = productoDescuento[posicion].descuento;
+      let precioFinal = precio - (precio*descuento/100);
+      p.innerHTML = `<p class="tachado">$${precio}</p> Price: $${precioFinal.toFixed(2)}`;
+    }else{
+      p.innerHTML = `Price: $${producto.price}`;
+    }
     return p;
   }
   export const crearBotonDeCompra = (e, b) => {
@@ -34,4 +42,3 @@
     b.className = "botonDeCompra";    
     return b;
   }
-  
