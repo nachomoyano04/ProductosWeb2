@@ -4,10 +4,11 @@ const $card = document.getElementsByClassName("card");
 axios("https://fakestoreapi.com/products")
 .then(respuestaProductos => {
     json = respuestaProductos.data; //parseamos el json a objeto javascript
-    return axios("descuentos.json")
+    return axios("http://localhost:3000/descuentos")
 })
 .then(respuestaDescuentos => {
-  let idsDescuentos = respuestaDescuentos.data.map(e => e.id);
+  const respuestaDescuentosJSON = JSON.parse(respuestaDescuentos.data);
+  let idsDescuentos = respuestaDescuentosJSON.map(e => e.id);
   let counter = 0; //contador para jugar con el arreglo de cartas
   json.forEach(e => {
         // Creamos los elementos del DOM para insertar en la carta
@@ -23,7 +24,7 @@ axios("https://fakestoreapi.com/products")
         $fragmento.appendChild(crearTitulo(e, $titulo));
         $fragmento.appendChild(crearDescripcion(e, $descripcion));
         $fragmento.appendChild(crearCategoria(e, $categoria));
-        $fragmento.appendChild(crearPrecio(e, $precio, respuestaDescuentos.data));
+        $fragmento.appendChild(crearPrecio(e, $precio, respuestaDescuentosJSON));
         $fragmento.appendChild(crearBotonDeCompra(e, $botonDeCompra));
         //corroboramos q el producto q se esta iterando tiene descuentos y si tiene agregamos franja de descuento
         if(idsDescuentos.includes(e.id)){
@@ -32,7 +33,7 @@ axios("https://fakestoreapi.com/products")
           let $pDeOFerta = document.createElement("p");
           $franjaRojaDescuento.className = "franjaRojaDescuento";
           $pDeOFerta.className = "deOferta";
-          $pDeOFerta.textContent = `de oferta -${respuestaDescuentos.data[position].descuento}%`;
+          $pDeOFerta.textContent = `de oferta -${respuestaDescuentosJSON[position].descuento}%`;
           $franjaRojaDescuento.appendChild($pDeOFerta);
           $card[counter].appendChild($franjaRojaDescuento);
         }
@@ -123,7 +124,10 @@ axios("https://fakestoreapi.com/products")
     });
   }
 })
-.catch(error => console.log(error.message));
+// .catch(error => console.log(error.message));
+// axios("http://localhost:3000/descuentos")
+//   .then(res => console.log(res.data))
+//   .catch(error => error? console.log(error):"")
 // const consumir = () => {
   //   const xhr = new XMLHttpRequest(); // Paso 1: Crear el objeto XMLHttpRequest
           //   const $card = document.getElementsByClassName("card");
