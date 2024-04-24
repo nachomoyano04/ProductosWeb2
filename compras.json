@@ -1,0 +1,48 @@
+[
+    [
+        {
+            "titulo": "CORTE AJUSTADO INFORMAL PARA HOMBRE",
+            "imagen": "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg",
+            "precio": "$11.99",
+            "cantidad": 1
+        },
+        {
+            "titulo": "CAMISETAS AJUSTADAS PREMIUM INFORMALES PARA HOMBRE",
+            "imagen": "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg",
+            "precio": "$22.3",
+            "cantidad": 1
+        },
+        {
+            "titulo": "FJALLRAVEN - MOCHILA FOLDSACK NO. 1, CON CAPACIDAD PARA 15 PORTÁTILES",
+            "imagen": "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
+            "precio": "$109.95",
+            "cantidad": 1
+        },
+        {
+            "titulo": "CHAQUETA DE ALGODÓN PARA HOMBRE",
+            "imagen": "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg",
+            "precio": "$55.99",
+            "cantidad": 1
+        }
+    ],
+    [
+        {
+            "titulo": "SILICON POWER 256GB SSD 3D NAND A55 SLC CACHÉ RENDIMIENTO AUMENTAR SATA III 2.5",
+            "imagen": "https://fakestoreapi.com/img/71kWymZ+c+L._AC_SX679_.jpg",
+            "precio": "$109",
+            "cantidad": 2
+        },
+        {
+            "titulo": "SANDISK SSD PLUS 1TB SSD INTERNO - SATA III 6 GB/S",
+            "imagen": "https://fakestoreapi.com/img/61U7T1koQqL._AC_SX679_.jpg",
+            "precio": "$109",
+            "cantidad": 12
+        },
+        {
+            "titulo": "DISCO DURO EXTERNO PORTÁTIL WD ELEMENTS DE 2 TB - USB 3.0",
+            "imagen": "https://fakestoreapi.com/img/61IBBVJvSDL._AC_SY879_.jpg",
+            "precio": "$51.20",
+            "cantidad": 2
+        }
+    ]
+]

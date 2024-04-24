@@ -135,6 +135,41 @@ footer a,img{
 .divCarritoCantidades{
     display: flex;
 }
-/* .divCarritoCantidades p{
-
-} */
+.imagenCarritoCompras{
+    width: 100px;
+    height: 120px;
+}
+.tituloCarritoCompras{
+    margin: 0px 10px;
+    width: 460px;
+}
+.btnEliminarCarritoCompras{
+    color: red;
+    font-family: sans-serif;
+    cursor: pointer;
+    text-decoration-line: underline;
+}
+.precioCarritoCompras{
+    margin: 0px 10px;
+    width: 55px;
+}
+.divCantidades{
+    display: flex;
+    margin: 0px 10px;
+    width: 70px;
+    justify-content: space-between;
+    align-items: center;
+}
+.totalCarritoCompras{
+    margin: 0px 10px;
+}
+.totalCompraCarritoCompras{
+    display: flex;
+    background: aliceblue;
+    justify-content: flex-end;
+    font-family: sans-serif;
+    font-size: larger;
+}
+.botonesComprarYBorrarCarrito{
+    margin: 0px 10px;
+}

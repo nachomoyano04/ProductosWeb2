@@ -15,228 +15,296 @@
 <body>
     <div id="cardContainerCarrito">
     </div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     let $contenedorCarrito = document.getElementById("cardContainerCarrito");
     let contenidoEnLocalStorage = JSON.parse(localStorage.getItem("productosCarrito"));  
     //Seccion titulo tuCarrito y cantidad De productos
     let $divComprarProductos = document.createElement("div");
     $divComprarProductos.id = "comprarProductos";
-    let $h4TituloTuCarrito = document.createElement("h4");
-    $h4TituloTuCarrito.innerHTML = "Tu Carrito";
-    let $h5CantidadDeProductos = document.createElement("h5");
-    $h5CantidadDeProductos.id = "cantidadDeProductos";
-    $h5CantidadDeProductos.innerHTML = "El Carrito está vacío";
-    $divComprarProductos.appendChild($h4TituloTuCarrito);
-    $divComprarProductos.appendChild($h5CantidadDeProductos); 
+
+    const agregarTituloYCantidadDeProductos = () => {
+        let $h4TituloTuCarrito = document.createElement("h4");
+        $h4TituloTuCarrito.innerHTML = "Tu Carrito";
+        let $h5CantidadDeProductos = document.createElement("h5");
+        $h5CantidadDeProductos.id = "cantidadDeProductos";
+        $h5CantidadDeProductos.innerHTML = "El Carrito está vacío";
+        $divComprarProductos.appendChild($h4TituloTuCarrito);
+        $divComprarProductos.appendChild($h5CantidadDeProductos); 
+    }
+    agregarTituloYCantidadDeProductos();
+
     $contenedorCarrito.appendChild($divComprarProductos);
     if(contenidoEnLocalStorage){
+        //Creamos los elementos del sumar o restar cantidades al producto
         let $btnRestarCant = document.getElementsByClassName("botonRestarCantidad");
         let $btnSumarCant = document.getElementsByClassName("botonSumarCantidad");
         let $pCantidad = document.getElementsByClassName("pCantidad"); 
-        let cantidad = contenidoEnLocalStorage.reduce((acc, elemento) => {
-            let obj = {}
-            if(!acc.find(e => e.titulo === elemento.titulo)){
-                obj.titulo = elemento.titulo;
-                obj.imagen = elemento.imagen;
-                obj.precio = elemento.precio;
-                acc.push(obj)
-            }
-            return acc;
-        }, []);
-        let objetoConTituloImagenCantidad = cantidad.map(e => {
-            let cantidad = contenidoEnLocalStorage.filter(elemento => elemento.titulo === e.titulo);
-            return {titulo: e.titulo, imagen: e.imagen, precio: e.precio, cantidad: cantidad.length}
-        })
-        const crearImagen = (elemento, $imagen) => {
+        const sacarCantidadDelLocalStorage = () => {
+            let cantidad = contenidoEnLocalStorage.reduce((acc, elemento) => {
+                let obj = {}
+                if(!acc.find(e => e.titulo === elemento.titulo)){
+                    obj.titulo = elemento.titulo;
+                    obj.imagen = elemento.imagen;
+                    obj.precio = elemento.precio;
+                    acc.push(obj)
+                }
+                return acc;
+            }, []);
+            return cantidad;
+        }
+        const crearObjeto = () => {
+            let objetoConTituloImagenCantidad = sacarCantidadDelLocalStorage().map(e => {
+                let cantidad = contenidoEnLocalStorage.filter(elemento => elemento.titulo === e.titulo);
+                return {titulo: e.titulo, imagen: e.imagen, precio: e.precio, cantidad: cantidad.length}
+            })
+            return objetoConTituloImagenCantidad
+        }
+
+        const crearImagen = (elemento) => {
+            let $imagen = document.createElement("img");
+            $imagen.className = "imagenCarritoCompras";
             $imagen.src = elemento.imagen;
-            $imagen.style.width = "100px";
-            $imagen.style.height = "120px";
             return $imagen;
         }
-        const crearTitulo = (elemento, $titulo) => {
+        
+        const crearTitulo = (elemento) => {
+            let $titulo = document.createElement("p");
             $titulo.innerHTML = elemento.titulo;
-            $titulo.style.margin = "0px 10px";
-            $titulo.style.width = "460px";
+            $titulo.className = "tituloCarritoCompras";
             return $titulo;
         }
-        const crearEliminar = (elemento, $eliminar) => {
+
+        const crearEliminar = (elemento) => {
+            let $eliminar = document.createElement("span");
+            let elementosCarrito = document.getElementsByClassName("productosEnCarrito");
             $eliminar.innerHTML = "eliminar";
-            $eliminar.style.color = "red";
-            $eliminar.style.fontFamily = "Proxima Nova, -apple-system, Roboto, Arial, sans-serif"
-            $eliminar.style.cursor = "pointer";
+            $eliminar.className = "btnEliminarCarritoCompras"
             $eliminar.addEventListener("click", e => {
                 let a = JSON.parse(localStorage.getItem("productosCarrito"));
                 let aContador = localStorage.getItem("contadorCarrito");
                 let b = a.filter(ele => ele.titulo !== elemento.titulo);
                 let cantidad = b.length;
                 if(cantidad === 0){
-                    localStorage.removeItem("productosCarrito");
                     localStorage.removeItem("contadorCarrito");
+                    localStorage.removeItem("productosCarrito");
+                    borrarCarrito();
                 }else{
                     aContador = parseInt(aContador)-1;
                     localStorage.setItem("productosCarrito", JSON.stringify(b));
+                    contenidoEnLocalStorage = JSON.parse(localStorage.getItem("productosCarrito"));
                     localStorage.setItem("contadorCarrito", aContador);
-                    for(let as of elementosCarrito){
-                        let titulo = as.childNodes[1].textContent;
-                        let titulo2 = elemento.titulo;
-                        if(titulo === titulo2){
-                            as.style.display = "none";
-                        }
-                    }
-                    // actualizar() // hacer funcion para actualizar y ver los cambios reflejados en la pagina!!!
+                    actualizarCarrito(elemento); // hacer funcion para actualizar y ver los cambios reflejados en la pagina!!!
                 }
             });
-            $eliminar.style.textDecorationLine = "underline";
             return $eliminar;
         }
 
-        const crearPrecio = (elemento, $precio) => {
-            let precios = [...elemento.precio].filter(e => e.charCodeAt(0)>= 48 && e.charCodeAt(0)<= 57 || e.charCodeAt(0) === 46 || e.charCodeAt(0) === 36);
-            precios = precios.join("");
-            precios = precios.split("$");
-            precios.shift();
-            if(precios.length === 2){
-                $precio.innerHTML = `<p class="tachado">$${precios[0]}</p> $${precios[1]}`;
-                $precio.style.margin = "0px 10px";
-                $precio.style.width = "55px";
-            }else{
-                $precio.innerHTML = `$${precios[0]}`;
-                $precio.style.margin = "0px 10px";
-                $precio.style.width = "55px";
-            }
+        const crearPrecio = (elemento) => {
+            let $precio = document.createElement("p");
+            let precio = parseFloat(elemento.precio.slice(1));
+            $precio.className = "precioCarritoCompras";
+            $precio.innerHTML = `$${precio.toFixed(2)}`;
             return $precio;
         }
-        const crearCantidad = (elemento, $cantidad) => {
+   
+        const crearCantidad = (elemento) => {
+            let $cantidad = document.createElement("div");
             $cantidad.innerHTML = `
             <button class="botonRestarCantidad">-</button>
             <p class="pCantidad">${elemento.cantidad}</p>
-            <button class="botonSumarCantidad">+</button>
-            `
-            $cantidad.style.display = "flex";
-            $cantidad.style.margin = "0px 10px"
-            $cantidad.style.width = "70px"
-            $cantidad.style.justifyContent = "space-between";
-            $cantidad.style.alignItems = "center";
-            $cantidad.className = "divCantidades"
+            <button class="botonSumarCantidad">+</button>`
+            $cantidad.className = "divCantidades";
             return $cantidad;
         }
+        
         let totalCompraCarrito = 0;
-        const crearTotal = (elemento, $total) => {
-            let precios = [...elemento.precio].filter(e => e.charCodeAt(0)>= 48 && e.charCodeAt(0)<= 57 || e.charCodeAt(0) === 46 || e.charCodeAt(0) === 36);
-            precios = precios.join("");
-            precios = precios.split("$");
-            precios.shift();
-            let total = 0;
-            if(precios.length === 2){
-                total = precios[1] * parseInt(elemento.cantidad); 
-            }else{
-                total = precios[0] * parseInt(elemento.cantidad);
-            }
-            $total.style.margin = "0px 10px";
-            $total.innerHTML = `Total: $${total.toFixed(2)}`;
-            totalCompraCarrito = totalCompraCarrito + total;
+        const crearTotal = (elemento) => {
+            let $total = document.createElement("p");
+            let precio = parseFloat(elemento.precio.slice(1));
+            let total = (precio * parseInt(elemento.cantidad)).toFixed(2);
+            $total.className = "totalCarritoCompras";
+            $total.innerHTML = `Total: $${total}`;
+            totalCompraCarrito = totalCompraCarrito + parseFloat(total);
             return $total;
         }
-        const crearTotalCompraCarrito = (totalCompraCarrito, $totalCarrito, $divTotalCarrito) => {
+  
+        const crearTotalCompraCarrito = () => {
+            let $divTotalCarrito = document.createElement("div");
+            let $totalCarrito = document.createElement("p");
+            $totalCarrito.id = "pTotalCarrito";
+            $divTotalCarrito.className = "totalCompraCarritoCompras"
             $totalCarrito.innerHTML = `Total: $${totalCompraCarrito.toFixed(2)}`;
-            $divTotalCarrito.style.display =  "flex";
-            $divTotalCarrito.style.justifyContent = "flex-end";
-            $divTotalCarrito.style.background =  "aliceblue";
-            $divTotalCarrito.style.fontSize = "larger";
-            $divTotalCarrito.style.fontFamily =  "sans-serif";
             $divTotalCarrito.appendChild($totalCarrito);
             return $divTotalCarrito;
         }
-        //Agregamos los productos del carrito en localstorage al DOM
-        objetoConTituloImagenCantidad.forEach(elemento => {
-            let $divProductoEnCarrito = document.createElement("div");
-            let $fragmento = document.createDocumentFragment();
-            let $imagen = document.createElement("img");
-            let $titulo = document.createElement("p");
-            let $eliminar = document.createElement("span");
-            let $precio = document.createElement("p");
-            let $cantidad = document.createElement("div");
-            let $total = document.createElement("p");
-            $divProductoEnCarrito.className = "productosEnCarrito";
-            $fragmento.appendChild(crearImagen(elemento, $imagen));
-            $fragmento.appendChild(crearTitulo(elemento, $titulo));
-            $fragmento.appendChild(crearEliminar(elemento, $eliminar))
-            $fragmento.appendChild(crearPrecio(elemento, $precio));
-            $fragmento.appendChild(crearCantidad(elemento, $cantidad));
-            $fragmento.appendChild(crearTotal(elemento, $total));
-            $divProductoEnCarrito.appendChild($fragmento);
-            $divComprarProductos.appendChild($divProductoEnCarrito);
-            $contenedorCarrito.appendChild($divComprarProductos);
-        })        
         
+        const agregarCantidadProductosAH5 = () => {
+            //Agregamos la cantidad de productos al h5 
+            document.getElementById("cantidadDeProductos").innerHTML = `${crearObjeto().length} productos`;
+        }
+        
+        const agregarLosProcutosAlCarrito = () => {            
+            //Agregamos los productos del carrito en localstorage al DOM
+            crearObjeto().forEach(elemento => {
+                let $divProductoEnCarrito = document.createElement("div");
+                let $fragmento = document.createDocumentFragment();            
+                $divProductoEnCarrito.className = "productosEnCarrito";
+                $fragmento.appendChild(crearImagen(elemento));
+                $fragmento.appendChild(crearTitulo(elemento));
+                $fragmento.appendChild(crearEliminar(elemento))
+                $fragmento.appendChild(crearPrecio(elemento));
+                $fragmento.appendChild(crearCantidad(elemento));
+                $fragmento.appendChild(crearTotal(elemento));
+                $divProductoEnCarrito.appendChild($fragmento);
+                $divComprarProductos.appendChild($divProductoEnCarrito);
+                $contenedorCarrito.appendChild($divComprarProductos);
+            })        
+        }
+        
+        const agregarTotalDeLaCompra = () => {
+            //Agregamos el total de la compra
+            $divComprarProductos.appendChild(crearTotalCompraCarrito());
+        }
+        //creamos el carrito:
+        const crearCarrito  = () => {
+                agregarCantidadProductosAH5();
+                agregarLosProcutosAlCarrito();
+                agregarTotalDeLaCompra();
+                crearBotonComprarYBorrar();
+                aplicarLogicaSumarYRestarCantidades();
+        }
+        const borrarCarrito = () => {
+            eliminarCarritoAnterior();
+            agregarTituloYCantidadDeProductos();
+        }
+        const eliminarCarritoAnterior = () => {
+            let p = document.getElementById("comprarProductos");
+            while(p.hasChildNodes && p.firstChild != null){
+                p.removeChild(p.firstChild)
+            }
+            document.getElementById("botonComprarYBorrar").remove();
+        };
 
-        document.getElementById("cantidadDeProductos").innerHTML = `${objetoConTituloImagenCantidad.length} productos`;
-        let $divBotonComprarYBorrar = document.createElement("div");
-        let $botonBorrar = document.createElement("button");
-        let $botonComprar = document.createElement("button");
-        $botonBorrar.textContent = "Eliminar carrito";
-        $botonComprar.textContent = "Comprar";
-        $botonBorrar.style.margin = "0px 10px";
-        $botonComprar.style.margin = "0px 10px";
-        $divBotonComprarYBorrar.id = "botonComprarYBorrar";
-        $divBotonComprarYBorrar.appendChild($botonBorrar);
-        $divBotonComprarYBorrar.appendChild($botonComprar);
-        $contenedorCarrito.appendChild($divBotonComprarYBorrar)
-        let $divTotalCarrito = document.createElement("div");
-        let $totalCarrito = document.createElement("p");
-        $totalCarrito.id = "pTotalCarrito";
-        $divComprarProductos.appendChild(crearTotalCompraCarrito(totalCompraCarrito, $totalCarrito, $divTotalCarrito));
-        $botonBorrar.addEventListener("click", () => {
-            localStorage.removeItem("contadorCarrito");
-            localStorage.removeItem("productosCarrito");
-            location.reload();
-        })
+
+        //Agregamos el boton comprar y borrarCarrito
+        const crearBotonComprarYBorrar = () => {
+            let $divBotonComprarYBorrar = document.createElement("div");
+            let $botonBorrar = document.createElement("button");
+            let $botonComprar = document.createElement("button");
+            $botonComprar.className = "botonesComprarYBorrarCarrito";
+            $botonBorrar.className = "botonesComprarYBorrarCarrito";
+            $botonBorrar.textContent = "Eliminar carrito";
+            $botonComprar.textContent = "Comprar";
+            $botonBorrar.addEventListener("click", () => {
+                localStorage.removeItem("contadorCarrito");
+                localStorage.removeItem("productosCarrito");
+                borrarCarrito();
+            })
+            $botonComprar.addEventListener("click", () => {
+                armarJSON()
+                    .then(data => {
+                        console.log("Pronto persistiremos la compra");
+                        localStorage.removeItem("contadorCarrito");
+                        localStorage.removeItem("productosCarrito");
+                        borrarCarrito()
+                    })
+                    .catch(error => console.log(error))
+            })
+            $divBotonComprarYBorrar.id = "botonComprarYBorrar";
+            $divBotonComprarYBorrar.appendChild($botonBorrar);
+            $divBotonComprarYBorrar.appendChild($botonComprar);
+            $contenedorCarrito.appendChild($divBotonComprarYBorrar)
+        }
+        
+        // const armarJSON = () => {
+        //     if(crearObjeto() != undefined && crearObjeto() != null)
+        //     axios.post("/compraRealizada", crearObjeto())
+        //     .then(response => {
+        //         alert("compra realizada con éxito.");
+        //     })
+        //     .catch(error => {
+        //         alert("hubo un error en realizar la compra, intentelo de nuevo más tarde.")
+        //     })
+        //     console.log(crearObjeto());
+        // }
+        const armarJSON = () => {
+        return axios.post("/compraRealizada", crearObjeto())
+            .then(response => {
+                alert("Compra realizada con éxito.");
+                return response.data; // Devuelve los datos recibidos del servidor si es necesario
+            })
+            .catch(error => {
+                alert("Hubo un error al realizar la compra, inténtelo de nuevo más tarde.");
+                throw error; // Lanza el error para que se maneje en la función que llama a armarJSON
+            });
+        }
+
+        const actualizarCarrito = (elemento) => {
+            let a = document.getElementsByClassName("productosEnCarrito");
+            for(let s of a){
+                if(s.childNodes[1].textContent === elemento.titulo){
+                    let precio = (parseFloat(s.childNodes[3].textContent.slice(1))).toFixed(2);
+                    totalCompraCarrito = totalCompraCarrito - precio;
+                    s.remove();
+                }
+            }
+            totalCompraCarrito = 0;
+            borrarCarrito();
+            crearCarrito()
+        }
+        let cont = localStorage.getItem("contadorCarrito");
         //recorremos los productos y aplicamos la logica de los botones sumar y restar cantidades
-        let productos = JSON.parse(localStorage.getItem("productosCarrito"));
-        let elementosCarrito = document.getElementsByClassName("productosEnCarrito");
-        let $pTotalCarrito = document.getElementById("pTotalCarrito");
-        for(let i = 0; i < objetoConTituloImagenCantidad.length; i++){ 
-            let elemento = objetoConTituloImagenCantidad[i];
-            let contador = localStorage.getItem("contadorCarrito");
-            let precioTotal = elementosCarrito[i].childNodes[5];
-            //filtramos los productos del localstorage q se esten iterando en este momento
-            let f = productos.filter(e => {return e.titulo === elemento.titulo}); 
-            let cantidad = $pCantidad[i];
-            $btnRestarCant[i].addEventListener("click", e => {
-                if(cantidad.textContent != 1){
-                    let contadorReduce = 0;
-                    productos = productos.reduce((acc,el) => {
-                        if(!(contadorReduce === 0 && el.titulo === f[0].titulo)){
-                            acc.push(el);
-                        }else{
-                            contadorReduce++;
-                        }
-                        return acc;
-                    },[])
-                    localStorage.setItem("productosCarrito", JSON.stringify(productos));
+        const aplicarLogicaSumarYRestarCantidades = () => {
+            let productos = JSON.parse(localStorage.getItem("productosCarrito"));
+            let elementosCarrito = document.getElementsByClassName("productosEnCarrito");
+            let $pTotalCarrito = document.getElementById("pTotalCarrito");
+            for(let i = 0; i < crearObjeto().length; i++){ 
+                let elemento = crearObjeto()[i];
+                let precioTotal = elementosCarrito[i].childNodes[5];
+                //filtramos los productos del localstorage q se esten iterando en este momento
+                let f = productos.filter(e => {return e.titulo === elemento.titulo}); 
+                let cantidad = $pCantidad[i];
+                $btnRestarCant[i].addEventListener("click", e => {
+                    if(cantidad.textContent != 1){
+                        let contadorReduce = 0;
+                        productos = productos.reduce((acc,el) => {
+                            if(!(contadorReduce === 0 && el.titulo === f[0].titulo)){
+                                acc.push(el);
+                            }else{
+                                contadorReduce++;
+                            }
+                            return acc;
+                        },[])
+                        localStorage.setItem("productosCarrito", JSON.stringify(productos));
+                        contenidoEnLocalStorage = JSON.parse(localStorage.getItem("productosCarrito"));
+                        let valorActual = parseInt(cantidad.textContent);
+                        let valorNuevo = valorActual - 1;
+                        let precio = parseFloat(elemento.precio.slice(1));
+                        let total = (precio * valorNuevo).toFixed(2);
+                        totalCompraCarrito -= precio;
+                        $pTotalCarrito.innerHTML = `Total: $${totalCompraCarrito.toFixed(2)}`;
+                        precioTotal.innerHTML = `Total: $${total}`;
+                        cantidad.innerHTML = valorNuevo;
+                    } 
+                })
+                $btnSumarCant[i].addEventListener("click", e => {
+                    productos.push(f[0]); //en cada click a sumar lo agregamos a producto
+                    localStorage.setItem("productosCarrito", JSON.stringify(productos)); //seteamos el localstorage
+                    contenidoEnLocalStorage = JSON.parse(localStorage.getItem("productosCarrito"));
                     let valorActual = parseInt(cantidad.textContent);
-                    let valorNuevo = valorActual - 1;
+                    let valorNuevo = valorActual + 1;
                     let precio = parseFloat(elemento.precio.slice(1));
                     let total = (precio * valorNuevo).toFixed(2);
-                    totalCompraCarrito -= precio;
+                    totalCompraCarrito += precio;
                     pTotalCarrito.innerHTML = `Total: $${totalCompraCarrito.toFixed(2)}`;
-                    precioTotal.innerHTML = `Total: $${total}`;
+                    precioTotal.innerHTML = `Total: $${total}`
                     cantidad.innerHTML = valorNuevo;
-                } 
-            })
-            $btnSumarCant[i].addEventListener("click", e => {
-                productos.push(f[0]); //en cada click a sumar lo agregamos a producto
-                localStorage.setItem("productosCarrito", JSON.stringify(productos)); //seteamos el localstorage
-                let valorActual = parseInt(cantidad.textContent);
-                let valorNuevo = valorActual + 1;
-                let precio = parseFloat(elemento.precio.slice(1));
-                let total = (precio * valorNuevo).toFixed(2);
-                totalCompraCarrito += precio;
-                pTotalCarrito.innerHTML = `Total: $${totalCompraCarrito.toFixed(2)}`;
-                precioTotal.innerHTML = `Total: $${total}`
-                cantidad.innerHTML = valorNuevo;
-            })
+                })
+            }
         }
+        crearCarrito();
+
     }
     </script>
     </body>

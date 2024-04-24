@@ -9,6 +9,7 @@ const PORT = 3000;
 const DESCUENTOS_FILE = './descuentos.json';
 
 app.use(express.static(path.join(__dirname)));
+app.use(express.json());
 
 app.get('/descuentos', (req, res) => {
   try {
@@ -34,6 +35,36 @@ app.get("/traduccion/:texto", (req, res) => {
   }catch(error){
     console.error("Error al traducir");
   }
+})
+
+app.post("/compraRealizada", (req, res) => {
+  const compraEnJSON = req.body;
+  if(!compraEnJSON){
+    console.log("El contenido recibido es undefined o nulo");
+    return res.status(400).send("El contenido no esta correcto")
+  }
+  fs.readFile("compras.json", "utf-8", (error, data) => {
+    if(error){
+      console.log(error)
+      return res.status(500).send("Problemas en el servidor");
+    }
+    let json;
+    console.log(data);
+    try{
+      json = JSON.parse(data);
+    }catch(error){
+      console.log(error)
+      return res.status(500).send("Problemas en el parseo del JSON");
+    }
+    json.push(compraEnJSON);
+    fs.writeFile("compras.json", JSON.stringify(json), error => {
+      if(error){
+        console.log(error)
+        return res.status(500).send("Problemas al escribir en el compras.json");
+      }
+      res.status(200).send("Compra realizada con éxito")
+    })
+  })
 })
 
 app.get("/", (req, res)=> {
