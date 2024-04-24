@@ -24,8 +24,8 @@
   }
   export const crearCategoria = (producto) => {
     let $categoria = document.createElement("p");
-    c.innerHTML = `Categoría: ${producto.category}`;
-    return c;
+    $categoria.innerHTML = `Categoría: ${producto.category}`;
+    return $categoria;
   }
   export const crearPrecio = (producto, productoDescuento) => {
     let $precio = document.createElement("p");

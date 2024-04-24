@@ -23,9 +23,9 @@ axios("https://fakestoreapi.com/products")
               $fragmento.appendChild(crearImagen(e));
               $fragmento.appendChild(crearTitulo(e));
               $fragmento.appendChild(crearDescripcion(e));
-              $fragmento.appendChild(crearCategoria(e, $categoria));
-              $fragmento.appendChild(crearPrecio(e, $precio, respuestaDescuentosJSON));
-              $fragmento.appendChild(crearBotonDeCompra(e, $botonDeCompra));
+              $fragmento.appendChild(crearCategoria(e));
+              $fragmento.appendChild(crearPrecio(e,respuestaDescuentosJSON));
+              $fragmento.appendChild(crearBotonDeCompra(e));
               //corroboramos q el producto q se esta iterando tiene descuentos y si tiene agregamos franja de descuento
               if(idsDescuentos.includes(e.id)){
                 let position = idsDescuentos.indexOf(e.id);
@@ -42,16 +42,25 @@ axios("https://fakestoreapi.com/products")
           // el cliente sale sin querer de la pagina y se guarden los productos en el carrito cuando 
           // se vuelve a cargar la pagina.
           let contador = localStorage.getItem("contadorCarrito");
+          let arregloDeProductos = JSON.parse(localStorage.getItem("productosCarrito"));
+          window.addEventListener("pageshow", event => { //actualizamos cuando se vuelve atrás del carrito
+            if(event.eventPhase === 2){
+              contador = localStorage.getItem("contadorCarrito");    
+              arregloDeProductos = JSON.parse(localStorage.getItem("productosCarrito"));
+              if(contador === null){
+                contador = 0;
+              }
+              if(!Array.isArray(arregloDeProductos)){
+                arregloDeProductos = [];
+              }
+              $contadorCarrito.textContent = contador;
+            }
+          });
           if (contador === null) {
             contador = 0;
             $contadorCarrito.textContent = contador;
           } else {
             $contadorCarrito.textContent = contador;
-          }
-          //recorremos las cartas
-          let arregloDeProductos = JSON.parse(localStorage.getItem("productosCarrito"));
-          if (!Array.isArray(arregloDeProductos)) {
-            arregloDeProductos = [];
           }
           for (let i = 0; i < $card.length; i++) {
             let descripcion;
@@ -99,13 +108,12 @@ axios("https://fakestoreapi.com/products")
               contador++;
               //codigo para agregar el producto a la lista de productos del carrito en localStorage
               let productoElegido = evento.target.parentElement.childNodes;
-              console.log(productoElegido);
               let elemento;
               if(productoElegido.length === 7){
                 elemento = {
                   imagen: productoElegido[1].src,
                   titulo: productoElegido[2].textContent,
-                  precio: productoElegido[5].textContent
+                  precio: productoElegido[5].childNodes[1].textContent
                 }
               }else{
                 elemento = {
@@ -113,6 +121,9 @@ axios("https://fakestoreapi.com/products")
                   titulo: productoElegido[1].textContent,
                   precio: productoElegido[4].textContent
                 }
+              }
+              if(arregloDeProductos === null){
+                arregloDeProductos = [];
               }
               arregloDeProductos.push(elemento);
               localStorage.setItem("productosCarrito", JSON.stringify(arregloDeProductos));

@@ -132,3 +132,9 @@ footer a,img{
 .tachado{
     text-decoration: line-through;
 }
+.divCarritoCantidades{
+    display: flex;
+}
+/* .divCarritoCantidades p{
+
+} */

@@ -24,7 +24,6 @@ app.get("/traduccion/:texto", (req, res) => {
   try{
       res.setHeader('Access-Control-Allow-Origin', '*');
       let textoATraducir = req.params.texto;
-      console.log(textoATraducir);
         translate({
           text: textoATraducir,
           source: "en",

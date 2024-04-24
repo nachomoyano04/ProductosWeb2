@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito de compras</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/imagenes/iconoCarrito.png">
 </head>
 <header>
     <div class="header">
@@ -28,124 +29,215 @@
     $divComprarProductos.appendChild($h4TituloTuCarrito);
     $divComprarProductos.appendChild($h5CantidadDeProductos); 
     $contenedorCarrito.appendChild($divComprarProductos);
-            if(contenidoEnLocalStorage){
-                let cantidad = contenidoEnLocalStorage.reduce((acc, elemento) => {
-                    let obj = {}
-                    if(!acc.find(e => e.titulo === elemento.titulo)){
-                        obj.titulo = elemento.titulo;
-                        obj.imagen = elemento.imagen;
-                        obj.precio = elemento.precio;
-                        acc.push(obj)
-                    }
-                    return acc;
-                }, []);
-                let objetoConTituloImagenCantidad = cantidad.map(e => {
-                    let cantidad = contenidoEnLocalStorage.filter(elemento => elemento.titulo === e.titulo);
-                    return {titulo: e.titulo, imagen: e.imagen, precio: e.precio, cantidad: cantidad.length}
-                })
-                const crearImagen = (elemento, $imagen) => {
-                    $imagen.src = elemento.imagen;
-                    $imagen.style.width = "100px";
-                    $imagen.style.height = "120px";
-                    return $imagen;
-                }
-                const crearTitulo = (elemento, $titulo) => {
-                    $titulo.innerHTML = elemento.titulo;
-                    $titulo.style.margin = "0px 10px";
-                    $titulo.style.width = "460px";
-                    return $titulo;
-                }
-                const crearPrecio = (elemento, $precio) => {
-                    let precios = [...elemento.precio].filter(e => e.charCodeAt(0)>= 48 && e.charCodeAt(0)<= 57 || e.charCodeAt(0) === 46 || e.charCodeAt(0) === 36);
-                    precios = precios.join("");
-                    precios = precios.split("$");
-                    precios.shift();
-                    if(precios.length === 2){
-                        $precio.innerHTML = `<p class="tachado">$${precios[0]}</p> $${precios[1]}`;
-                        $precio.style.margin = "0px 10px";
-                        $precio.style.width = "55px";
-                    }else{
-                        $precio.innerHTML = `$${precios[0]}`;
-                        $precio.style.margin = "0px 10px";
-                        $precio.style.width = "55px";
-                    }
-                    return $precio;
-                }
-                const crearCantidad = (elemento, $cantidad) => {
-                    $cantidad.innerHTML = `cantidad: ${elemento.cantidad}`;
-                    $cantidad.style.margin = "0px 10px"
-                    $cantidad.style.width = "70px"
-                    return $cantidad;
-                }
-                let totalCompraCarrito = 0;
-                const crearTotal = (elemento, $total) => {
-                    let precios = [...elemento.precio].filter(e => e.charCodeAt(0)>= 48 && e.charCodeAt(0)<= 57 || e.charCodeAt(0) === 46 || e.charCodeAt(0) === 36);
-                    precios = precios.join("");
-                    precios = precios.split("$");
-                    precios.shift();
-                    let total = 0;
-                    if(precios.length === 2){
-                        total = precios[1] * parseInt(elemento.cantidad); 
-                    }else{
-                        total = precios[0] * parseInt(elemento.cantidad);
-                    }
-                    $total.style.margin = "0px 10px";
-                    $total.innerHTML = `Total: $${total.toFixed(2)}`;
-                    totalCompraCarrito = totalCompraCarrito + total;
-                    return $total;
-                }
-                const crearTotalCompraCarrito = (totalCompraCarrito, $totalCarrito, $divTotalCarrito) => {
-                    $totalCarrito.innerHTML = `Total: $${totalCompraCarrito.toFixed(2)}`;
-                    $divTotalCarrito.style.display =  "flex";
-                    $divTotalCarrito.style.justifyContent = "flex-end";
-                    $divTotalCarrito.style.background =  "aliceblue";
-                    $divTotalCarrito.style.fontSize = "larger";
-                    $divTotalCarrito.style.fontFamily =  "sans-serif";
-                    $divTotalCarrito.appendChild($totalCarrito);
-                    return $divTotalCarrito;
-                }
-                
-                //Agregamos los productos del carrito en localstorage al DOM
-                objetoConTituloImagenCantidad.forEach(elemento => {
-                    let $divProductoEnCarrito = document.createElement("div");
-                    let $fragmento = document.createDocumentFragment();
-                    let $imagen = document.createElement("img");
-                    let $titulo = document.createElement("p");
-                    let $precio = document.createElement("p");
-                    let $cantidad = document.createElement("p");
-                    let $total = document.createElement("p");
-                    $divProductoEnCarrito.className = "productosEnCarrito";
-                    $fragmento.appendChild(crearImagen(elemento, $imagen));
-                    $fragmento.appendChild(crearTitulo(elemento, $titulo));
-                    $fragmento.appendChild(crearPrecio(elemento, $precio));
-                    $fragmento.appendChild(crearCantidad(elemento, $cantidad));
-                    $fragmento.appendChild(crearTotal(elemento, $total));
-                    $divProductoEnCarrito.appendChild($fragmento);
-                    $divComprarProductos.appendChild($divProductoEnCarrito);
-                    $contenedorCarrito.appendChild($divComprarProductos);
-                })
-                document.getElementById("cantidadDeProductos").innerHTML = `${objetoConTituloImagenCantidad.length} productos`;
-                let $divBotonComprarYBorrar = document.createElement("div");
-                let $botonBorrar = document.createElement("button");
-                let $botonComprar = document.createElement("button");
-                $botonBorrar.textContent = "Eliminar carrito";
-                $botonComprar.textContent = "Comprar";
-                $botonBorrar.style.margin = "0px 10px";
-                $botonComprar.style.margin = "0px 10px";
-                $divBotonComprarYBorrar.id = "botonComprarYBorrar";
-                $divBotonComprarYBorrar.appendChild($botonBorrar);
-                $divBotonComprarYBorrar.appendChild($botonComprar);
-                $contenedorCarrito.appendChild($divBotonComprarYBorrar)
-                let $divTotalCarrito = document.createElement("div");
-                let $totalCarrito = document.createElement("p");
-                $divComprarProductos.appendChild(crearTotalCompraCarrito(totalCompraCarrito, $totalCarrito, $divTotalCarrito));
-                $botonBorrar.addEventListener("click", () => {
-                    localStorage.removeItem("contadorCarrito");
-                    localStorage.removeItem("productosCarrito");
-                    location.reload();
-                })
+    if(contenidoEnLocalStorage){
+        let $btnRestarCant = document.getElementsByClassName("botonRestarCantidad");
+        let $btnSumarCant = document.getElementsByClassName("botonSumarCantidad");
+        let $pCantidad = document.getElementsByClassName("pCantidad"); 
+        let cantidad = contenidoEnLocalStorage.reduce((acc, elemento) => {
+            let obj = {}
+            if(!acc.find(e => e.titulo === elemento.titulo)){
+                obj.titulo = elemento.titulo;
+                obj.imagen = elemento.imagen;
+                obj.precio = elemento.precio;
+                acc.push(obj)
             }
+            return acc;
+        }, []);
+        let objetoConTituloImagenCantidad = cantidad.map(e => {
+            let cantidad = contenidoEnLocalStorage.filter(elemento => elemento.titulo === e.titulo);
+            return {titulo: e.titulo, imagen: e.imagen, precio: e.precio, cantidad: cantidad.length}
+        })
+        const crearImagen = (elemento, $imagen) => {
+            $imagen.src = elemento.imagen;
+            $imagen.style.width = "100px";
+            $imagen.style.height = "120px";
+            return $imagen;
+        }
+        const crearTitulo = (elemento, $titulo) => {
+            $titulo.innerHTML = elemento.titulo;
+            $titulo.style.margin = "0px 10px";
+            $titulo.style.width = "460px";
+            return $titulo;
+        }
+        const crearEliminar = (elemento, $eliminar) => {
+            $eliminar.innerHTML = "eliminar";
+            $eliminar.style.color = "red";
+            $eliminar.style.fontFamily = "Proxima Nova, -apple-system, Roboto, Arial, sans-serif"
+            $eliminar.style.cursor = "pointer";
+            $eliminar.addEventListener("click", e => {
+                let a = JSON.parse(localStorage.getItem("productosCarrito"));
+                let aContador = localStorage.getItem("contadorCarrito");
+                let b = a.filter(ele => ele.titulo !== elemento.titulo);
+                let cantidad = b.length;
+                if(cantidad === 0){
+                    localStorage.removeItem("productosCarrito");
+                    localStorage.removeItem("contadorCarrito");
+                }else{
+                    aContador = parseInt(aContador)-1;
+                    localStorage.setItem("productosCarrito", JSON.stringify(b));
+                    localStorage.setItem("contadorCarrito", aContador);
+                    for(let as of elementosCarrito){
+                        let titulo = as.childNodes[1].textContent;
+                        let titulo2 = elemento.titulo;
+                        if(titulo === titulo2){
+                            as.style.display = "none";
+                        }
+                    }
+                    // actualizar() // hacer funcion para actualizar y ver los cambios reflejados en la pagina!!!
+                }
+            });
+            $eliminar.style.textDecorationLine = "underline";
+            return $eliminar;
+        }
 
+        const crearPrecio = (elemento, $precio) => {
+            let precios = [...elemento.precio].filter(e => e.charCodeAt(0)>= 48 && e.charCodeAt(0)<= 57 || e.charCodeAt(0) === 46 || e.charCodeAt(0) === 36);
+            precios = precios.join("");
+            precios = precios.split("$");
+            precios.shift();
+            if(precios.length === 2){
+                $precio.innerHTML = `<p class="tachado">$${precios[0]}</p> $${precios[1]}`;
+                $precio.style.margin = "0px 10px";
+                $precio.style.width = "55px";
+            }else{
+                $precio.innerHTML = `$${precios[0]}`;
+                $precio.style.margin = "0px 10px";
+                $precio.style.width = "55px";
+            }
+            return $precio;
+        }
+        const crearCantidad = (elemento, $cantidad) => {
+            $cantidad.innerHTML = `
+            <button class="botonRestarCantidad">-</button>
+            <p class="pCantidad">${elemento.cantidad}</p>
+            <button class="botonSumarCantidad">+</button>
+            `
+            $cantidad.style.display = "flex";
+            $cantidad.style.margin = "0px 10px"
+            $cantidad.style.width = "70px"
+            $cantidad.style.justifyContent = "space-between";
+            $cantidad.style.alignItems = "center";
+            $cantidad.className = "divCantidades"
+            return $cantidad;
+        }
+        let totalCompraCarrito = 0;
+        const crearTotal = (elemento, $total) => {
+            let precios = [...elemento.precio].filter(e => e.charCodeAt(0)>= 48 && e.charCodeAt(0)<= 57 || e.charCodeAt(0) === 46 || e.charCodeAt(0) === 36);
+            precios = precios.join("");
+            precios = precios.split("$");
+            precios.shift();
+            let total = 0;
+            if(precios.length === 2){
+                total = precios[1] * parseInt(elemento.cantidad); 
+            }else{
+                total = precios[0] * parseInt(elemento.cantidad);
+            }
+            $total.style.margin = "0px 10px";
+            $total.innerHTML = `Total: $${total.toFixed(2)}`;
+            totalCompraCarrito = totalCompraCarrito + total;
+            return $total;
+        }
+        const crearTotalCompraCarrito = (totalCompraCarrito, $totalCarrito, $divTotalCarrito) => {
+            $totalCarrito.innerHTML = `Total: $${totalCompraCarrito.toFixed(2)}`;
+            $divTotalCarrito.style.display =  "flex";
+            $divTotalCarrito.style.justifyContent = "flex-end";
+            $divTotalCarrito.style.background =  "aliceblue";
+            $divTotalCarrito.style.fontSize = "larger";
+            $divTotalCarrito.style.fontFamily =  "sans-serif";
+            $divTotalCarrito.appendChild($totalCarrito);
+            return $divTotalCarrito;
+        }
+        //Agregamos los productos del carrito en localstorage al DOM
+        objetoConTituloImagenCantidad.forEach(elemento => {
+            let $divProductoEnCarrito = document.createElement("div");
+            let $fragmento = document.createDocumentFragment();
+            let $imagen = document.createElement("img");
+            let $titulo = document.createElement("p");
+            let $eliminar = document.createElement("span");
+            let $precio = document.createElement("p");
+            let $cantidad = document.createElement("div");
+            let $total = document.createElement("p");
+            $divProductoEnCarrito.className = "productosEnCarrito";
+            $fragmento.appendChild(crearImagen(elemento, $imagen));
+            $fragmento.appendChild(crearTitulo(elemento, $titulo));
+            $fragmento.appendChild(crearEliminar(elemento, $eliminar))
+            $fragmento.appendChild(crearPrecio(elemento, $precio));
+            $fragmento.appendChild(crearCantidad(elemento, $cantidad));
+            $fragmento.appendChild(crearTotal(elemento, $total));
+            $divProductoEnCarrito.appendChild($fragmento);
+            $divComprarProductos.appendChild($divProductoEnCarrito);
+            $contenedorCarrito.appendChild($divComprarProductos);
+        })        
+        
+
+        document.getElementById("cantidadDeProductos").innerHTML = `${objetoConTituloImagenCantidad.length} productos`;
+        let $divBotonComprarYBorrar = document.createElement("div");
+        let $botonBorrar = document.createElement("button");
+        let $botonComprar = document.createElement("button");
+        $botonBorrar.textContent = "Eliminar carrito";
+        $botonComprar.textContent = "Comprar";
+        $botonBorrar.style.margin = "0px 10px";
+        $botonComprar.style.margin = "0px 10px";
+        $divBotonComprarYBorrar.id = "botonComprarYBorrar";
+        $divBotonComprarYBorrar.appendChild($botonBorrar);
+        $divBotonComprarYBorrar.appendChild($botonComprar);
+        $contenedorCarrito.appendChild($divBotonComprarYBorrar)
+        let $divTotalCarrito = document.createElement("div");
+        let $totalCarrito = document.createElement("p");
+        $totalCarrito.id = "pTotalCarrito";
+        $divComprarProductos.appendChild(crearTotalCompraCarrito(totalCompraCarrito, $totalCarrito, $divTotalCarrito));
+        $botonBorrar.addEventListener("click", () => {
+            localStorage.removeItem("contadorCarrito");
+            localStorage.removeItem("productosCarrito");
+            location.reload();
+        })
+        //recorremos los productos y aplicamos la logica de los botones sumar y restar cantidades
+        let productos = JSON.parse(localStorage.getItem("productosCarrito"));
+        let elementosCarrito = document.getElementsByClassName("productosEnCarrito");
+        let $pTotalCarrito = document.getElementById("pTotalCarrito");
+        for(let i = 0; i < objetoConTituloImagenCantidad.length; i++){ 
+            let elemento = objetoConTituloImagenCantidad[i];
+            let contador = localStorage.getItem("contadorCarrito");
+            let precioTotal = elementosCarrito[i].childNodes[5];
+            //filtramos los productos del localstorage q se esten iterando en este momento
+            let f = productos.filter(e => {return e.titulo === elemento.titulo}); 
+            let cantidad = $pCantidad[i];
+            $btnRestarCant[i].addEventListener("click", e => {
+                if(cantidad.textContent != 1){
+                    let contadorReduce = 0;
+                    productos = productos.reduce((acc,el) => {
+                        if(!(contadorReduce === 0 && el.titulo === f[0].titulo)){
+                            acc.push(el);
+                        }else{
+                            contadorReduce++;
+                        }
+                        return acc;
+                    },[])
+                    localStorage.setItem("productosCarrito", JSON.stringify(productos));
+                    let valorActual = parseInt(cantidad.textContent);
+                    let valorNuevo = valorActual - 1;
+                    let precio = parseFloat(elemento.precio.slice(1));
+                    let total = (precio * valorNuevo).toFixed(2);
+                    totalCompraCarrito -= precio;
+                    pTotalCarrito.innerHTML = `Total: $${totalCompraCarrito.toFixed(2)}`;
+                    precioTotal.innerHTML = `Total: $${total}`;
+                    cantidad.innerHTML = valorNuevo;
+                } 
+            })
+            $btnSumarCant[i].addEventListener("click", e => {
+                productos.push(f[0]); //en cada click a sumar lo agregamos a producto
+                localStorage.setItem("productosCarrito", JSON.stringify(productos)); //seteamos el localstorage
+                let valorActual = parseInt(cantidad.textContent);
+                let valorNuevo = valorActual + 1;
+                let precio = parseFloat(elemento.precio.slice(1));
+                let total = (precio * valorNuevo).toFixed(2);
+                totalCompraCarrito += precio;
+                pTotalCarrito.innerHTML = `Total: $${totalCompraCarrito.toFixed(2)}`;
+                precioTotal.innerHTML = `Total: $${total}`
+                cantidad.innerHTML = valorNuevo;
+            })
+        }
+    }
     </script>
     </body>
     <footer>
