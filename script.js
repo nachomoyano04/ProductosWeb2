@@ -70,36 +70,7 @@ axios("https://fakestoreapi.com/products")
             }else{
               descripcion = $card[i].childNodes[2]; //tomamos el elemento de la descripcion
             }
-            //Codigo para que cuando se produzca el mouse over muestre la descripcion entera
-            // y esconda la categoria y el precio del producto
-            descripcion.addEventListener("mouseover", () => {
-              //Nos fijamos si el producto tiene descuento, si es así la posicion para esconder la categoria y precio es una mas
-              if($card[i].childNodes.length === 7){
-                $card[i].childNodes[4].style.display = "none";
-                $card[i].childNodes[5].style.display = "none";    
-              }else{
-                $card[i].childNodes[3].style.display = "none";
-                $card[i].childNodes[4].style.display = "none";
-              }
-              descripcion.textContent = `Descripción:\n${json[i].description}`;
-              descripcion.style.whiteSpace = 'pre-line';
-            });
-            //Lo mismo que para el mouseover pero cuando se produce el mouseleave se muestran
-            // de nuevo la categoria y el precio del producto
-            descripcion.addEventListener("mouseleave", () => {
-              //Nos fijamos si el producto tiene descuento, si es así la posicion para mostrars la categoria y precio es una mas
-              if($card[i].childNodes.length === 7){
-                $card[i].childNodes[4].style.display = "block";
-                $card[i].childNodes[5].style.display = "block";    
-              }else{
-                $card[i].childNodes[3].style.display = "block";
-                $card[i].childNodes[4].style.display = "block";
-              }
-              descripcion.textContent = `Descripción:\n${json[i].description.slice(0, 30)}...`;
-              descripcion.style.whiteSpace = 'pre-line';
-            })
-            // localStorage.setItem("contadorCarrito", 0); //seteamos el contador del carrito
-            // localStorage.setItem("productosCarrito", JSON.stringify(""));
+
             $botones[i].addEventListener("click", (evento) => {
               //codigo para agregar el producto a la lista de productos del carrito en localStorage
               let productoElegido = evento.target.parentElement.childNodes;
@@ -108,7 +79,8 @@ axios("https://fakestoreapi.com/products")
                 elemento = {
                   imagen: productoElegido[1].src,
                   titulo: productoElegido[2].textContent,
-                  precio: productoElegido[5].childNodes[1].textContent
+                  precio: productoElegido[5].childNodes[0].textContent,
+                  precioFinal: productoElegido[5].childNodes[1].textContent
                 }
               }else{
                 elemento = {
@@ -136,7 +108,18 @@ axios("https://fakestoreapi.com/products")
               }
               arregloDeProductos.push(elemento);
               localStorage.setItem("productosCarrito", JSON.stringify(arregloDeProductos));
+              mostrarMensajeProductoAgregado();
           });
+          const mostrarMensajeProductoAgregado = () => {
+              let $mensaje = document.createElement("p");
+              $mensaje.className = "mensajeProductoAgregado";
+              $mensaje.innerHTML = "Agregado al carrito correctamente";
+              let b = document.querySelector("body");
+              b.appendChild($mensaje);
+              setTimeout(() => { 
+                b.removeChild($mensaje);
+              }, 1500);
+            }
           }
         })
   .catch(e => console.log("Error", e.message))

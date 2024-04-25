@@ -11,15 +11,14 @@
   }
   export const crearTitulo = (producto) => {
     let $titulo = document.createElement("h3");
-    $titulo.style.fontFamily = "Serif ";
-    // $titulo.style.backgroundColor = "#929982";
     $titulo.innerHTML = `${(producto.title)}`;
     return $titulo;
   }
   export const crearDescripcion = (producto) => {
     let $descripcion = document.createElement("p");
-    $descripcion.style.fontFamily = "lato";
-    $descripcion.innerHTML = `Descripción: <br>${producto.description.slice(0,30)}...`;
+    $descripcion.className = "tooltip";
+    let icono = `<i class="fa-solid fa-circle-info"></i>`;
+    $descripcion.innerHTML = `Descripción: ${producto.description.slice(0,30)}...${icono}<span class="tooltiptext">${producto.description}</span>`;
     return $descripcion;
   }
   export const crearCategoria = (producto) => {
@@ -37,15 +36,21 @@
       let descuento = productoDescuento[posicion].descuento;
       let precioFinal = precio - (precio*descuento/100);
       let $pPrecioDescontado = document.createElement("p");
+      let $descuento = document.createElement("p");
+      $descuento.innerHTML = `${descuento}% OFF`;
+      $descuento.style.color = "#00a650";
       $pPrecioDescontado.innerHTML = `$${precio}`;
       $pPrecioDescontado.className = "tachado";
       let $pPorcentaje = document.createElement("p");
       $pPorcentaje.innerHTML = `Ahorras: $${(precio-precioFinal).toFixed(2)} !!!`;
-      $pPorcentaje.style.background = `rgb(55, 255, 0)`;
+      $pPorcentaje.style.color = "#00a650";
       $precio.innerHTML = `$${precioFinal.toFixed(2)}`;
       $precio.style.fontSize = "23px";
+      $precio.style.marginBottom =  "0px";
+      $divPrecios.className = "divPreciosProductosConDescuento"
       $divPrecios.appendChild($pPrecioDescontado);
       $divPrecios.appendChild($precio);
+      $divPrecios.appendChild($descuento);
       $divPrecios.appendChild($pPorcentaje);
     }else{
       $precio.innerHTML = `$${producto.price}`;
@@ -67,7 +72,7 @@
     let $pDeOFerta = document.createElement("p");
     $franjaRojaDescuento.className = "franjaRojaDescuento";
     $pDeOFerta.className = "deOferta";
-    $pDeOFerta.textContent = `DE OFERTA ${porcentaje}%`;
+    $pDeOFerta.textContent = `DE OFERTA`;
     $franjaRojaDescuento.appendChild($pDeOFerta);
     return $franjaRojaDescuento;
   }

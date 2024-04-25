@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito de compras</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="/imagenes/iconoCarrito.png">
 </head>
@@ -44,10 +48,18 @@
             let cantidad = contenidoEnLocalStorage.reduce((acc, elemento) => {
                 let obj = {}
                 if(!acc.find(e => e.titulo === elemento.titulo)){
-                    obj.titulo = elemento.titulo;
-                    obj.imagen = elemento.imagen;
-                    obj.precio = elemento.precio;
-                    acc.push(obj)
+                    if(elemento.precioFinal){
+                        obj.titulo = elemento.titulo;
+                        obj.imagen = elemento.imagen;
+                        obj.precio = elemento.precio;
+                        obj.precioFinal = elemento.precioFinal;
+                        acc.push(obj)    
+                    }else{
+                        obj.titulo = elemento.titulo;
+                        obj.imagen = elemento.imagen;
+                        obj.precio = elemento.precio;
+                        acc.push(obj)
+                    }
                 }
                 return acc;
             }, []);
@@ -56,8 +68,13 @@
         const crearObjeto = () => {
             let objetoConTituloImagenCantidad = sacarCantidadDelLocalStorage().map(e => {
                 let cantidad = contenidoEnLocalStorage.filter(elemento => elemento.titulo === e.titulo);
-                let precioTot = (parseFloat(e.precio.slice(1))*cantidad.length).toFixed(2)
-                return {titulo: e.titulo, imagen: e.imagen, precio: e.precio, cantidad: cantidad.length, precioTotal: precioTot}
+                let precioTot = (parseFloat(e.precio.slice(1))*cantidad.length).toFixed(2);
+                if(e.precioFinal){
+                    precioTot = (parseFloat(e.precioFinal.slice(1))*cantidad.length).toFixed(2);
+                    return {titulo: e.titulo, imagen: e.imagen, precio: e.precio, precioFinal: e.precioFinal, cantidad: cantidad.length, precioTotal: precioTot}
+                }else{
+                    return {titulo: e.titulo, imagen: e.imagen, precio: e.precio, cantidad: cantidad.length, precioTotal: precioTot}
+                }
             })
             return objetoConTituloImagenCantidad
         }
@@ -79,7 +96,7 @@
         const crearEliminar = (elemento) => {
             let $eliminar = document.createElement("span");
             let elementosCarrito = document.getElementsByClassName("productosEnCarrito");
-            $eliminar.innerHTML = "eliminar";
+            $eliminar.innerHTML = "Eliminar";
             $eliminar.className = "btnEliminarCarritoCompras"
             $eliminar.addEventListener("click", e => {
                 let a = JSON.parse(localStorage.getItem("productosCarrito"));
@@ -96,25 +113,51 @@
                     contenidoEnLocalStorage = JSON.parse(localStorage.getItem("productosCarrito"));
                     localStorage.setItem("contadorCarrito", aContador);
                     actualizarCarrito(elemento); // hacer funcion para actualizar y ver los cambios reflejados en la pagina!!!
+                    
                 }
+                //mostramos cartelito producto eliminado
+                let $mensaje = document.createElement("p");
+                $mensaje.innerHTML = "Producto eliminado";
+                let bod = document.querySelector("body");
+                $mensaje.className = "mensajeProductoAgregado";
+                $mensaje.style.backgroundColor = "red";
+                bod.appendChild($mensaje);
+                setTimeout(() => { 
+                    bod.removeChild($mensaje);
+                }, 1000);
             });
             return $eliminar;
         }
 
         const crearPrecio = (elemento) => {
             let $precio = document.createElement("p");
+            let $divPrecios = document.createElement("div");
             let precio = parseFloat(elemento.precio.slice(1));
-            $precio.className = "precioCarritoCompras";
             $precio.innerHTML = `$${precio.toFixed(2)}`;
-            return $precio;
+            if(elemento.precioFinal){
+                let $precioFinal = document.createElement("p");
+                let precioFinal = parseFloat(elemento.precioFinal.slice(1));
+                $precioFinal.innerHTML = `$${precioFinal.toFixed(2)}`;
+                $precioFinal.className = "precioCarritoCompras";
+                $precio.style.textDecorationLine = "line-through";
+                $precio.style.fontSize = "15px";
+                $precio.style.marginLeft = "15px";
+                $divPrecios.className = "divPreciosDescuentoCarrito";
+                $divPrecios.appendChild($precio);
+                $divPrecios.appendChild($precioFinal);
+                return $divPrecios;
+            }else{
+                $precio.className = "precioCarritoCompras";
+                return $precio;
+            }
         }
    
         const crearCantidad = (elemento) => {
             let $cantidad = document.createElement("div");
             $cantidad.innerHTML = `
-            <button class="botonRestarCantidad">-</button>
+            <p class="botonRestarCantidad"><i class="fa-solid fa-square-minus"></i></p>
             <p class="pCantidad">${elemento.cantidad}</p>
-            <button class="botonSumarCantidad">+</button>`
+            <p class="botonSumarCantidad"><i class="fa-solid fa-square-plus"></i></p>`
             $cantidad.className = "divCantidades";
             return $cantidad;
         }
@@ -123,6 +166,9 @@
         const crearTotal = (elemento) => {
             let $total = document.createElement("p");
             let precio = parseFloat(elemento.precio.slice(1));
+            if(elemento.precioFinal){
+                precio = parseFloat(elemento.precioFinal.slice(1))
+            }
             let total = (precio * parseInt(elemento.cantidad)).toFixed(2);
             $total.className = "totalCarritoCompras";
             $total.innerHTML = `Total: $${total}`;
@@ -205,13 +251,18 @@
             $botonComprar.addEventListener("click", () => {
                 armarJSON()
                     .then(data => {
-                        console.log(data);
                         localStorage.removeItem("contadorCarrito");
                         localStorage.removeItem("productosCarrito");
-                        borrarCarrito()
-                        let avisoCompra = document.getElementById("cantidadDeProductos");
-                        avisoCompra.innerHTML = `¡¡¡${data.toUpperCase()}!!!`
-                        avisoCompra.style.fontSize = "20px"
+                        borrarCarrito();
+                        //Mostramos cartelito de compra exitosa
+                        let $mensaje = document.createElement("p");
+                        $mensaje.innerHTML = "COMPRA REALIZADA CON ÉXITO!!!";
+                        let bod = document.querySelector("body");
+                        $mensaje.className = "mensajeProductoAgregado";
+                        bod.appendChild($mensaje);
+                        setTimeout(() => { 
+                            bod.removeChild($mensaje);
+                        }, 2500);
                     })
                     .catch(error => console.log(error))
             })
@@ -221,7 +272,6 @@
             $contenedorCarrito.appendChild($divBotonComprarYBorrar)
         }
         const armarJSON = () => {
-        console.log(crearObjeto())
         return axios.post("/compraRealizada", crearObjeto())
             .then(response => {
                 return response.data;
@@ -272,6 +322,9 @@
                         let valorActual = parseInt(cantidad.textContent);
                         let valorNuevo = valorActual - 1;
                         let precio = parseFloat(elemento.precio.slice(1));
+                        if(elemento.precioFinal){
+                            precio = parseFloat(elemento.precioFinal.slice(1));
+                        }
                         let total = (precio * valorNuevo).toFixed(2);
                         totalCompraCarrito -= precio;
                         $pTotalCarrito.innerHTML = `Total: $${totalCompraCarrito.toFixed(2)}`;
@@ -286,6 +339,9 @@
                     let valorActual = parseInt(cantidad.textContent);
                     let valorNuevo = valorActual + 1;
                     let precio = parseFloat(elemento.precio.slice(1));
+                    if(elemento.precioFinal){
+                        precio = parseFloat(elemento.precioFinal.slice(1));
+                    }
                     let total = (precio * valorNuevo).toFixed(2);
                     totalCompraCarrito += precio;
                     pTotalCarrito.innerHTML = `Total: $${totalCompraCarrito.toFixed(2)}`;
@@ -303,7 +359,7 @@
         <ul>
         <li>WEB II</li>
         <li>Ignacio Moyano Guzmán</li>
-        <li><a href="https://github.com/nachomoyano04"><img src="/imagenes/github_733609.png" alt="github">GitHub</a></li>
+        <li><a href="https://github.com/nachomoyano04" target="_blank"><img src="/imagenes/github_733609.png" alt="github">GitHub</a></li>
         </ul>    
         </footer>
         </html>

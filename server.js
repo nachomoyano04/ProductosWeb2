@@ -65,7 +65,7 @@ app.post("/compraRealizada", (req, res) => {
       day: 'numeric',
     };
     let fechaDeHoy = new Date().toLocaleDateString(undefined, options);
-    let horaDeHoy = new Date().toLocaleTimeString();
+    let horaDeHoy = new Date().toLocaleTimeString('en-US',{ hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
     cantidad++;
     let totalCompra = 0;
     compraEnJSON.forEach(element => {
