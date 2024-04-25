@@ -56,7 +56,8 @@
         const crearObjeto = () => {
             let objetoConTituloImagenCantidad = sacarCantidadDelLocalStorage().map(e => {
                 let cantidad = contenidoEnLocalStorage.filter(elemento => elemento.titulo === e.titulo);
-                return {titulo: e.titulo, imagen: e.imagen, precio: e.precio, cantidad: cantidad.length}
+                let precioTot = (parseFloat(e.precio.slice(1))*cantidad.length).toFixed(2)
+                return {titulo: e.titulo, imagen: e.imagen, precio: e.precio, cantidad: cantidad.length, precioTotal: precioTot}
             })
             return objetoConTituloImagenCantidad
         }
@@ -204,10 +205,13 @@
             $botonComprar.addEventListener("click", () => {
                 armarJSON()
                     .then(data => {
-                        console.log("Pronto persistiremos la compra");
+                        console.log(data);
                         localStorage.removeItem("contadorCarrito");
                         localStorage.removeItem("productosCarrito");
                         borrarCarrito()
+                        let avisoCompra = document.getElementById("cantidadDeProductos");
+                        avisoCompra.innerHTML = `¡¡¡${data.toUpperCase()}!!!`
+                        avisoCompra.style.fontSize = "20px"
                     })
                     .catch(error => console.log(error))
             })
@@ -216,27 +220,14 @@
             $divBotonComprarYBorrar.appendChild($botonComprar);
             $contenedorCarrito.appendChild($divBotonComprarYBorrar)
         }
-        
-        // const armarJSON = () => {
-        //     if(crearObjeto() != undefined && crearObjeto() != null)
-        //     axios.post("/compraRealizada", crearObjeto())
-        //     .then(response => {
-        //         alert("compra realizada con éxito.");
-        //     })
-        //     .catch(error => {
-        //         alert("hubo un error en realizar la compra, intentelo de nuevo más tarde.")
-        //     })
-        //     console.log(crearObjeto());
-        // }
         const armarJSON = () => {
+        console.log(crearObjeto())
         return axios.post("/compraRealizada", crearObjeto())
             .then(response => {
-                alert("Compra realizada con éxito.");
-                return response.data; // Devuelve los datos recibidos del servidor si es necesario
+                return response.data;
             })
             .catch(error => {
-                alert("Hubo un error al realizar la compra, inténtelo de nuevo más tarde.");
-                throw error; // Lanza el error para que se maneje en la función que llama a armarJSON
+                return error;
             });
         }
 

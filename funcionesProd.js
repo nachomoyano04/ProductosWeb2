@@ -11,9 +11,9 @@
   }
   export const crearTitulo = (producto) => {
     let $titulo = document.createElement("h3");
-    $titulo.style.fontFamily = "monospace";
-    $titulo.style.backgroundColor = "#929982";
-    $titulo.innerHTML = `${(producto.title).toUpperCase()}`;
+    $titulo.style.fontFamily = "Serif ";
+    // $titulo.style.backgroundColor = "#929982";
+    $titulo.innerHTML = `${(producto.title)}`;
     return $titulo;
   }
   export const crearDescripcion = (producto) => {

@@ -1,22 +1,21 @@
 body{
-    background-color: #002500;
+    background-color: #222831;
     text-align: center;
     margin: 160px 0px 80px 0px;
 }
 h1{
-    color: antiquewhite;
+    color: black;
 }
 .cardContainer{
     display: grid;
-    background-color: #929982;
     width: 90%;
     grid-template-columns: 25% 25% 25% 25%;
     margin: auto auto;
 }
 .card{
-    border: 3px solid white ;
+    border: 3px solid white;
     border-radius: 15px;
-    background-color: #495F41;
+    background-color: white;
     margin: 15px;
     text-align: center;
 }
@@ -49,13 +48,14 @@ footer a,img{
     cursor:pointer;
 }
 .header{
-    background-color: #929982;
+    background-color: #EEEEEE;
     position: absolute;
     top: 0;
     align-items: center;
     width: 100%;
     display: flex;
     justify-content: space-evenly;
+    color: #222831;
 }
 #carrtitoYContador{
     display: flex;
@@ -120,7 +120,7 @@ footer a,img{
 }
 .deOferta{
     position: absolute;
-    background-color: rgb(55, 255, 0);
+    background-color: #00ADB5;
     color: black;
     font-family: sans-serif;
     width: 314px;
@@ -172,4 +172,7 @@ footer a,img{
 }
 .botonesComprarYBorrarCarrito{
     margin: 0px 10px;
+}
+.avisoCompraRealizada{
+    font-size: 25px;
 }

@@ -49,14 +49,35 @@ app.post("/compraRealizada", (req, res) => {
       return res.status(500).send("Problemas en el servidor");
     }
     let json;
-    console.log(data);
+    let cantidad;
     try{
-      json = JSON.parse(data);
+      let contenidoCompras = JSON.parse(data);
+      cantidad = contenidoCompras.length;
+      json = contenidoCompras;
     }catch(error){
       console.log(error)
       return res.status(500).send("Problemas en el parseo del JSON");
     }
-    json.push(compraEnJSON);
+    const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    };
+    let fechaDeHoy = new Date().toLocaleDateString(undefined, options);
+    let horaDeHoy = new Date().toLocaleTimeString();
+    cantidad++;
+    let totalCompra = 0;
+    compraEnJSON.forEach(element => {
+      totalCompra += parseFloat(element.precioTotal);
+    });
+    let obj = {
+      "Numero de compra": cantidad,
+      "Fecha de compra": `${fechaDeHoy} a la hora ${horaDeHoy}`,
+      "Productos": compraEnJSON,
+      "Total compra": `$${totalCompra.toFixed(2)}`
+    }
+    json.push(obj);
     fs.writeFile("compras.json", JSON.stringify(json), error => {
       if(error){
         console.log(error)
